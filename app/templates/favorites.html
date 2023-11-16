@@ -1,0 +1,108 @@
+{% extends 'layout.html' %}
+{% load bootstrap_icons %}
+{% block css %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles/explore.css' %}">
+{% endblock %}
+
+{% block title %}
+    Favorites
+{% endblock %}
+
+
+
+{% block content %}
+
+{% load static %}
+
+
+ {% if favorites %}
+     <h1 class="text-muted">Favorites {% bs_icon 'heart' %}</h1>
+     <div class="row row-cols-1 row-cols-md-3 g-4" style="min-height: 400px">
+  {% for product in favorites %}
+                    <div class="col-md-4 mt-5">
+                        <div class="card h-100 border-0 rounded-0 shadow" style="width: 25rem;">
+                            <img src="/media/{{ product.image }}" class="card-img-top rounded-0" alt="...">
+                            <div class="card-body d-flex flex-column mt-3 mb-3">
+                                <div class="row mt-auto">
+                                    <div class="col-10">
+                                        <h4 class="card-title">{{ product.name }}</h4>
+                                        <p class="card-text text-muted" style="display: flex; align-items: center">
+                                            {{ product.description }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row align-items-center text-center g-0">
+                                <div class="col-4">
+                                    <h5>{{ product.price }}€</h5>
+                                </div>
+                                <div class="col-4">
+                                      <a href="/product/{{ product.id }}" class="btn btn-info w-100 p-3 rounded-0 text-center">
+                                        {% bs_icon 'eye' %}
+                                        <span class="align-middle">View</span>
+                                      </a>
+                                </div>
+                                <div class="col-4">
+                                    {% if user %}
+                                  <a href="{% url 'add_to_cart' product.id %}" class="btn btn-success w-100 p-3 rounded-0 text-center" onclick="ShowModal()">
+                                    {% bs_icon 'cart-plus' %}
+                                    <span class="align-middle">Buy</span>
+                                  </a>
+                                    {% else %}
+                                        <a href="/login" class="btn btn-success w-100 p-3 rounded-0 text-center">
+                                            {% bs_icon 'cart-plus' %}
+                                            <span class="align-middle">Buy</span>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                {% endfor %}
+                {% else %}
+                    <div class="d-flex justify-content-center align-items-center" style="height: 50vh;">
+        <div class="text-center">
+            <h1 class="text-muted">You have no favorites yet</h1>
+            <a href="/" class="btn btn-success mt-3">Explore
+                {% bs_icon "arrow-right" %}
+            </a>
+        </div>
+    </div>
+                {% endif %}
+
+</div>
+
+
+    <div class="modal fade" id="CartModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Item added</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="lead">The item has been successfully added to your cart!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Continue shopping</button>
+                <a href="/view_cart" class="btn btn-success">Go to cart</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+     <script>
+        function ShowModal() {
+            var myModal = new bootstrap.Modal(document.getElementById('CartModal'), {
+                keyboard: false
+            })
+            myModal.show()
+
+        }
+    </script>
+
+
+{% endblock %}

@@ -1,0 +1,62 @@
+
+    {% extends "layout_no_login.html" %}
+{% block content %}
+    <div style="  border: 5px;margin: auto;width: 20%;padding: 10px; align-content: center" class="card">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="true" href="/register/">Sign Up</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" tabindex="-1" aria-current="true" href="/login/">Log In</a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <form action="." method="post" class="form-horizontal">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.username.label_tag }}
+                    <div class="col-md-10">
+                        {{ form.username }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form.name.label_tag }}
+                    <div class="col-md-10">
+                        {{ form.name }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form.email.label_tag }}
+                    <div class="col-md-10">
+                        {{ form.email }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form.password1.label_tag }}
+                    <div class="col-md-10">
+                        {{ form.password1 }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form.password2.label_tag }}
+                    <div class="col-md-10">
+                        {{ form.password2 }}
+                    </div>
+                </div>
+                <div style="color: red">
+                    {% if form.errors %}
+                        <p style="color: red">{{ form.errors }}</p>
+                    {% endif %}
+                </div>
+                <div class="form-group" style="padding-top: 20px;">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" class="btn btn-primary" value="Register" style="width: 100%"/>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+

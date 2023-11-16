@@ -1,0 +1,231 @@
+
+{% extends 'layout.html' %}
+
+{% load bootstrap_icons %}
+
+{% block title %} Product {% endblock %}
+
+{% block content %}
+    {% load static %}
+    {% block styles %}
+        <link rel="stylesheet" href="{% static 'styles/product.css' %}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    {% endblock %}
+
+        <!-- content -->
+        <section class="py-5">
+          <div class="container">
+            <div class="row gx-5">
+              <aside class="col-lg-6">
+                <div class="border rounded-4 mb-3 d-flex justify-content-center">
+                    <img style="max-width: 100%; max-height: 100vh; margin: auto;" class="rounded-4 fit" src="/media/{{ product.image }}" />
+                  </a>
+                </div>
+                <!-- thumbs-wrap.// -->
+                <!-- gallery-wrap .end// -->
+              </aside>
+              <main class="col-lg-6">
+                <div class="ps-lg-3">
+                    <div class="product-info">
+                        <h4 class="title text-dark" style="display: inline-block;">
+                            {{ product.name }}
+                        </h4>
+                        <p style="display: inline-block;">by</p>
+                        <a class="link-secondary" href="/profile/{{ seller.username }}" style="display: inline-block; text-decoration: none"> @{{ seller.username }}</a>
+                    </div>
+
+                  <div class="d-flex flex-row">
+                    <span class="text-muted">{{ product.seen }} {% bs_icon 'eye' %}</span>
+                  </div>
+
+                  <div class="mb-3">
+                    <span class="h5">{{ product.price }}€</span>
+                  </div>
+
+                  <p>
+                      {{ product.description }}
+                  </p>
+
+                  <div class="row">
+                    <dt class="col-3">Brand:</dt>
+                    <dd class="col-9">{{ product.brand }}</dd>
+
+                    <dt class="col-3">Color</dt>
+                    <dd class="col-9">{{ product.color }}</dd>
+
+                    <dt class="col-3">Category</dt>
+                    <dd class="col-9">{{ product.category }}</dd>
+                  </div>
+
+                  <hr />
+
+                  <div style="display: flex;">
+                        <div class="flex-item">
+                            <form action="." method="post">
+                            {% csrf_token %}
+                                {% if not favorite %}
+                                    {% if user %}
+                                        <button class="btn btn-outline-danger" name="favorite">{% bs_icon 'heart' %} Add To Favorites</button>
+                                    {% else %}
+                                        <a href="/login" class="btn btn-outline-danger" name="favorite">{% bs_icon 'heart' %} Add To Favorites</a>
+                                    {% endif %}
+                                    {% else %}
+                                    {% if user %}
+                                        <button class="btn btn-danger" name="remove_favorite">{% bs_icon 'heart-fill' %} Remove From Favorites</button>
+                                    {% else %}
+                                        <a href="/login" class="btn btn-danger" name="remove_favorite">{% bs_icon 'heart-fill' %} Remove From Favorites</a>
+                                    {% endif %}
+                                {% endif %}
+                            </form>
+                        </div>
+                        <div class="flex-item" style="margin-left: 10px">
+                            {% if user %}
+                                 <a href="{% url 'add_to_cart' product.id %}" class="btn btn-success text-center" onclick="ShowModal()">
+                                    {% bs_icon 'bag' %}
+                                    <span class="align-middle">Buy Now</span>
+                                  </a>
+
+                            {% else %}
+                            <a href="/login" class="btn btn-success">{% bs_icon 'bag' %} Buy Now</a>
+                            {% endif %}
+                        </div>
+                      {% if user.admin %}
+                        <div class="flex-item" style="margin-left: 10px">
+                            <form action="." method="post" style="padding-left: 1px;">
+                                {% csrf_token %}
+                                <input type="hidden" name="deleteProduct" value="{{ product.id }}">
+                                <button type="submit" class="btn btn-danger">{% bs_icon 'trash' %} Remove Product</button>
+                            </form>
+                        </div>
+                      {% endif %}
+                  </div>
+
+
+                </div>
+              </main>
+            </div>
+          </div>
+        </section>
+        <!-- content -->
+
+       <section class="bg-light border-top py-4">
+          <div class="container">
+            <div class="row gx-4">
+              <div class="col-lg-8 mb-4">
+                <div class=" rounded-2 px-3">
+
+                            <div class="card shadow-0 border" style="background-color: #f0f2f5;">
+                              <div class="card" style="border-radius: 15px;">
+                                  <div class="card-body p-4">
+                                    <div class="d-flex text-black">
+                                      <div class="flex-shrink-0">
+                                        <img src="{% if seller.image %}/media/{{ seller.image.name }}{% else %}/media/user_no_picture.png{% endif %}" alt="avatar" style="height: 60px; width: 60px; object-fit: cover; border-radius:100px;"
+                                        />
+                                      </div>
+                                      <div class="flex-grow-1 ms-3">
+                                        <h5 class="mb-1">{{ seller.name }}</h5>
+                                        <p class="mb-2 pb-1" style="color: #2b2a2a;">@{{ seller.username }}</p>
+                                        <div class="d-flex justify-content-start rounded-3 p-2 mb-2"
+                                          style="background-color: #efefef;">
+                                          <div>
+                                            <p class="small text-muted mb-1">Products Sold</p>
+                                            <p class="mb-0">{{ seller.sold }}</p>
+                                          </div>
+                                          <div class="px-3">
+                                            <p class="small text-muted mb-1">Followers</p>
+                                            <p class="mb-0">{{ followers|length }}</p>
+                                          </div>
+                                          <div>
+                                            <p class="small text-muted mb-1">Rating</p>
+                                            <p class="mb-0">{{ rating }}/5.0</p>
+                                          </div>
+                                        </div>
+                                      <form action="." method="post">
+                                        {% csrf_token %}
+                                        <div class="d-flex pt-1">
+                                        {% if user %}
+                                          <a href="/profile/{{ seller.username }}" class="btn btn-outline-primary me-1 flex-grow-1">View Profile</a>
+                                        {% else %}
+                                            <a href="/login" class="btn btn-outline-primary me-1 flex-grow-1">View Profile</a>
+                                        {% endif %}
+                                          {% if user not in followers %}
+                                              {% if user %}
+                                              <button type="submit" name="follow" type="button" class="btn btn-primary flex-grow-1">{% bs_icon 'person-plus-fill' %} Follow</button>
+                                                  {% else %}
+                                                <a href="/login" class="btn btn-primary flex-grow-1">{% bs_icon 'person-plus-fill' %} Follow</a>
+                                                    {% endif %}
+                                              {% else %}
+                                              <button type="submit" name="unfollow" type="button" class="btn btn-secondary flex-grow-1">{% bs_icon 'person-dash-fill' %} Unfollow</button>
+                                            {% endif %}
+                                        </div>
+                                      </form>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                            </div>
+                          </div>
+
+
+              </div>
+              <div class="col-lg-4">
+                <div class="px-0 border rounded-2 shadow-0">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">Other Products by <b>@{{ seller.username }}</b></h5>
+                        {% for other_product in other_products %}
+                          <div class="d-flex mb-3">
+                            <a href="" class="me-3">
+                              <img src="/media/{{ other_product.image }}" style="min-width: 96px; height: 96px;" class="img-md img-thumbnail" />
+                            </a>
+                            <div class="info">
+                              <a href="/product/{{ other_product.id }}" class="nav-link mb-1" style="text-decoration: none; color: #4d5154">
+                                  {{ other_product.name }}
+                              </a>
+                              <strong class="text-dark" style="margin-left: 20px"> {{ other_product.price }}€</strong>
+                            </div>
+                          </div>
+                        {% endfor %}
+
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+    <div class="modal fade" id="CartModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Item added</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="lead">The item has been successfully added to your cart!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Continue shopping</button>
+                <a href="/view_cart" class="btn btn-success">Go to cart</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+     <script>
+        function ShowModal() {
+            var myModal = new bootstrap.Modal(document.getElementById('CartModal'), {
+                keyboard: false
+            })
+            myModal.show()
+
+        }
+    </script>
+
+
+
+{% endblock %}

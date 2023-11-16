@@ -1,0 +1,32 @@
+.card-text .bi-star-fill {
+    margin-right: 4px; /* Adjust the margin as needed */
+}
+
+.rating {
+  display: inline-block;
+}
+
+.rating input {
+  display: none;
+}
+
+.rating label {
+  float: right;
+  padding: 0 0.1em;
+  cursor: pointer;
+  font-size: 1.5em;
+  color: #ccc; /* Cor padrão das estrelas */
+}
+
+.rating label:before {
+  content: "\2605"; /* Estrela preenchida: ★ */
+}
+
+.rating label:hover:before,
+.rating label:hover ~ label:before {
+  color: #ffcc00; /* Ao passar o mouse, mudar a cor para amarelo */
+}
+
+.rating input:checked ~ label:before {
+  color: #ffcc00; /* Estrela preenchida para seleção */
+}

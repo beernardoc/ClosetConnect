@@ -1,0 +1,183 @@
+{% extends 'layout.html' %}
+{% load bootstrap_icons %}
+
+{% block title %} Profile {% endblock %}
+
+{% block content %}
+    {% load static %}
+    {% block styles %}
+        <link rel="stylesheet" href="{% static 'styles/product.css' %}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    {% endblock %}
+
+    <div class="py-5">
+
+        <div class="container">
+
+            <div class="row d-flex justify-content-center text-center">
+                <img src="{% if seller.image %}/media/{{ seller.image.name }}{% else %}{% static 'images/user_no_picture.png' %}{% endif %}"
+                     style="width: 10vw; height: 9vw; object-fit: cover"
+                     class="rounded-circle" alt="">
+                <h2 class="cover-heading pt-2">{{ seller.name }}</h2>
+                <p class="text-secondary cover-heading mb-2">@{{ seller.username }}</p>
+                <form action="." method="post" class="mb-2">
+                    {% csrf_token %}
+                    {% if user not in  followers %}<button type="submit" class="btn btn-primary" name="follow">{% bs_icon 'person-plus-fill' %} Follow</button>
+                    {% else %}<button type="submit" class="btn btn-secondary" name="unfollow">{% bs_icon 'person-dash-fill' %} Unfollow</button>{% endif %}
+                </form>
+                <p class="lead">Followers <b>{% if followers %}{{ followers|length }}{% else %}0{% endif %}</b> | Following <b>{% if following %}{{ following|length }}{% else %}0{% endif %}</b></p>
+            </div>
+            <div class="row">
+                {% for product in products %}
+                    <div class="col-md-4 mt-5">
+                        <div class="card h-100 border-0 rounded-0 shadow" style="width: 25rem;">
+                            <img src="/media/{{ product.image }}" class="card-img-top rounded-0" alt="...">
+                            <div class="card-body d-flex flex-column mt-3 mb-3">
+                                <div class="row mt-auto">
+                                    <div class="col-10">
+                                        <h4 class="card-title">{{ product.name }}</h4>
+                                        <p class="card-text text-muted" style="display: flex; align-items: center">
+                                            {{product.description }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row align-items-center text-center g-0">
+                                <div class="col-4">
+                                    <h5>{{ product.price }}€</h5>
+                                </div>
+                                <div class="col-4" style="float: right">
+                                  <a href="/product/{{ product.id }}" class="btn btn-info w-100 p-3 rounded-0 text-center">
+                                    {% bs_icon 'eye' %}
+                                    <span class="align-middle">View</span>
+                                  </a>
+                                </div>
+                                <div class="col-4">
+                                    {% if product not in favorites %}
+                                    <button type="button" data-value="{{ product.id }}" class="favorite btn btn-outline-danger w-100 p-3 rounded-0 text-center"><i class="fa-regular fa-heart"></i></button>
+                                    {% else %}
+                                    <button type="button" data-value="{{ product.id }}" class="favorite btn btn-danger w-100 p-3 rounded-0 text-center"><i class="fa-regular fa-heart"></i></button>
+                                    {% endif %}
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+                <div class="row d-flex justify-content-center mt-5">
+                    <div class="card shadow-0 border" style="background-color: #f0f2f5;">
+                              <div class="card-body p-4">
+                                <div class="form-outline mb-4">
+                                    <form action="." method="post">
+                                        {% csrf_token %}
+                                        {{ comment_form.comment }}
+                                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                                            <div class="rating">
+                                              <input type="radio" id="star5" name="rating_input" value="5">
+                                              <label for="star5" title="5 stars"></label>
+                                              <input type="radio" id="star4" name="rating_input" value="4">
+                                              <label for="star4" title="4 stars"></label>
+                                              <input type="radio" id="star3" name="rating_input" value="3">
+                                              <label for="star3" title="3 stars"></label>
+                                              <input type="radio" id="star2" name="rating_input" value="2">
+                                              <label for="star2" title="2 stars"></label>
+                                              <input type="radio" id="star1" name="rating_input" value="1">
+                                              <label for="star1" title="1 star"></label>
+                                          </div>
+                                        <div>
+                                            <input style="margin-top: 10px" type="submit" class="btn btn-primary" value="Post Comment">
+                                        </div>
+                                    </form>
+                                </div>
+                                {% for comment in comments %}
+                                    <div class="card mb-4">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between">
+                                                <p>{{ comment.text }}</p>
+                                                {% if user.admin or user == seller or user == comment.user_id%}
+                                                    <form action="." method="post" style="padding-left: 1px;">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="deleteComment" value="{{ comment.id }}">
+                                                        <button type="submit" class="btn btn-danger">{% bs_icon 'trash' %}</button>
+                                                    </form>
+                                                {% endif %}
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <div class="d-flex flex-row align-items-center">
+                                                    <img src="/media/{{ comment.user_id.image }}" alt="avatar" style="height: 25px; width: 25px; object-fit: cover" />
+                                                    <p class="small mb-0 ms-2">{{ comment.user_id.name }}</p>
+                                                </div>
+                                                <div class="d-flex flex-row align-items-center">
+                                                    {% if comment.rating == 1 %}
+                                                        {% bs_icon 'star-fill' %}
+                                                    {% elif comment.rating == 2 %}
+                                                        {% bs_icon 'star-fill' %}
+                                                        {% bs_icon 'star-fill' %}
+                                                    {% elif comment.rating == 3 %}
+                                                        {% bs_icon 'star-fill' %}
+                                                        {% bs_icon 'star-fill' %}
+                                                        {% bs_icon 'star-fill' %}
+                                                    {% elif comment.rating == 4 %}
+                                                        {% bs_icon 'star-fill' %}
+                                                        {% bs_icon 'star-fill' %}
+                                                        {% bs_icon 'star-fill' %}
+                                                        {% bs_icon 'star-fill' %}
+                                                    {% elif comment.rating == 5 %}
+                                                        {% bs_icon 'star-fill' %}
+                                                        {% bs_icon 'star-fill' %}
+                                                        {% bs_icon 'star-fill' %}
+                                                        {% bs_icon 'star-fill' %}
+                                                        {% bs_icon 'star-fill' %}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                              </div>
+                            </div>
+                          </div>
+
+                </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".favorite").click(function (event) {
+                event.preventDefault();
+                var id = $(this).data("value");
+                $.ajax({
+                    url: "/profile/{{ seller.username }}/",
+                    type: "POST",
+                    data: {
+                        "favorite": id,
+                        "csrfmiddlewaretoken": "{{ csrf_token }}"
+                    },
+                    success: function (data) {
+                        if (data["message"] === "add") {
+                            // Remove the old class
+                            $(".favorite[data-value='" + id + "']").removeClass('btn-outline-danger');
+
+                            // Add the new class
+                            $(".favorite[data-value='" + id + "']").addClass('btn-danger');
+
+                        } else {
+                            // Remove the old class
+                            $(".favorite[data-value='" + id + "']").removeClass('btn-danger');
+
+                            // Add the new class
+                            $(".favorite[data-value='" + id + "']").addClass('btn-outline-danger');
+
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

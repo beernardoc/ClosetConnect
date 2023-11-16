@@ -1,0 +1,129 @@
+{% extends 'layout.html' %}
+
+{% block css %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles/profile_settings.css' %}">
+{% endblock %}
+
+{% block title %}
+    Account Settings
+{% endblock %}
+
+{% block content %}
+<div class="container">
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-10 col-xl-8 mx-auto">
+        <h2 class="h3 mb-4 page-title" style="margin-top: 10px">Settings</h2>
+        <div class="my-4">
+                <div class="row mt-5 align-items-center">
+                    <div class="col-md-3 text-center mb-5">
+                        <div class="d-flex">
+                            <img src="{% if user.image %}/media/{{ user.image.name }}{% else %}{% static 'images/user_no_picture.png' %}{% endif %}"
+                     style="width: 10vw; height: 9vw; object-fit: cover"
+                     class="rounded-circle" alt="">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="row align-items-center">
+                            <div class="col-md-7">
+                                <h4 class="mb-1">{{ user.name }}</h4>
+                                <p class="small mb-3">@{{ user.username }}</p>
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <p>{% if user.description %} {{ user.description }} {% else %} No description yet, write something
+                            about yourself!{% endif %}</p>
+                        </div>
+                        <form method="post" action="." enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="row mb-4">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            {{ image_form.image }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <input type="submit" class="btn btn-success" value="Update Profile Picture">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <hr class="my-4" />
+                <form action="." method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        {{ profile_form.as_div }}
+                    </div>
+                    <hr class="my-4" />
+                    {% if error %}
+                        <p style="color: red">{{ error }}</p>
+                    {% elif success %}
+                        <p style="color: green">{{ success }}</p>
+                    {% endif %}
+                    <input type="submit" class="btn btn-primary" name="profile_change" value="Save Change" />
+                </form>
+                <button type="button" name="password_change" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#firstModal" style="margin-left: 10px">
+                  Change Password
+                </button>
+                <button type="button" name="delete_account" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#secondModal" style="margin-left: 10px">
+                  Delete Account
+                </button>
+
+        <!-- Password Modal -->
+        <div class="modal fade" id="firstModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Changing the password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+            <form action="." method="post">
+                {% csrf_token %}
+                  <div class="modal-body">
+                    <div class="form-row">
+                        {{ password_form.as_div }}
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-success" name="password_change" value="Confirm Changes"/>
+                  </div>
+            </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delete Modal -->
+        <div class="modal fade" id="secondModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Deleting your account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+            <form action="." method="post">
+                {% csrf_token %}
+                  <div class="modal-body">
+                    <div class="form-row">
+                        Are you sure you want to delete your account?
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-danger" name="delete_account" value="Delete Account"/>
+                  </div>
+            </form>
+            </div>
+          </div>
+        </div>
+        </div>
+    </div>
+</div>
+
+</div>
+{% endblock %}

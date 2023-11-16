@@ -1,0 +1,136 @@
+{% extends 'layout.html' %}
+
+{% block css %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles/sell.css.css' %}">
+{% endblock %}
+
+{% block title %}
+    Sell
+{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-10 col-xl-8 mx-auto">
+        <h2 class="h3 mb-4 page-title text-muted" style="margin-top: 10px">Adding product...</h2>
+        <div class="my-4">
+
+                <hr class="my-4" />
+                <form method="post" id="formPrincipal" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group">
+                      {{ form.name.label_tag }}
+                      {{ form.name }}
+                    </div>
+                    <div class="form-group">
+                      {{ form.description.label_tag }}
+                      {{ form.description }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.image.label_tag }}
+                        {{ form.image }}
+
+                    </div>
+                    <div class="form-group">
+                        {{ form.category.label_tag }}
+                        {{ form.category }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.brand.label_tag }}
+                        {{ form.brand }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.color.label_tag }}
+                        {{ form.color }}
+                    </div>
+
+                    <div class="form-group">
+                      {{ form.price.label_tag }}
+                      {{ form.price }}
+                    </div>
+
+                    <hr class="my-4" />
+                    <div class="col-md-offset-2 col-md-10">
+
+                        <button type="button" class="btn btn-success" onclick="showConfirmationModal()">Sell</button>
+
+
+
+                    </div>
+
+
+                </form>
+
+
+
+
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="itemModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Confirm your item details</h5>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p><strong>Name:</strong> <span id="itemName"></span></p>
+            <p><strong>Description:</strong> <span id="itemDescription"></span></p>
+            <p><strong>Price:</strong> <span id="itemPrice"></span></p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-success" data-bs-dismiss="modal" onclick="submitForm()">Confirm</button>
+        </div>
+    </div>
+</div>
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+    <script>
+    function showConfirmationModal() {
+        // Obtenha os valores do formulário
+        var itemName = document.getElementById("id_name").value;
+        var itemDescription = document.getElementById("id_description").value;
+        var itemPrice = document.getElementById("id_price").value;
+
+        // Atualize o modal com os valores
+        document.getElementById("itemName").textContent = itemName;
+        document.getElementById("itemDescription").textContent = itemDescription;
+        document.getElementById("itemPrice").textContent = itemPrice;
+
+        // Exiba o modal
+        var myModal = new bootstrap.Modal(document.getElementById('itemModal'), {
+            backdrop: 'static',
+            keyboard: false
+        });
+        myModal.show();
+    }
+
+    function submitForm() {
+        // Envie o formulário após a confirmação
+        document.getElementById("formPrincipal").submit();
+    }
+</script>
+
+
+
+
+
+{% endblock %}

@@ -1,0 +1,13 @@
+.instagram-post {
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+        .post-image {
+            max-width: 100%;
+        }
+        .post-actions {
+            padding: 10px;
+        }
+        .post-actions i {
+            margin-right: 10px;
+        }

@@ -1,0 +1,76 @@
+{% extends 'layout.html' %}
+{% load bootstrap_icons %}
+{% block css %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles/explore.css' %}">
+{% endblock %}
+
+{% block title %}
+    Carrinho
+{% endblock %}
+
+{% block content %}
+
+    {% if cart_items.count == 0 %}
+
+    <div class="d-flex justify-content-center align-items-center" style="height: 50vh;">
+        <div class="text-center">
+            <h1 class="text-muted">Your cart is empty</h1>
+            <a href="/" class="btn btn-success mt-3">Buy now
+                {% bs_icon "arrow-right" %}
+            </a>
+        </div>
+    </div>
+
+    {% else %}
+
+
+        <div class="row" style="margin-top: 30px">
+            <div class="col-md-12">
+                <h1 class="text-muted">Your choices</h1>
+                <hr>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Product</th>
+                                <th scope="col">Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in cart_items %}
+                                <tr>
+                                    <td>{{ item.product.name }}</td>
+                                    <td>{{ item.price }}€</td>
+                                <td>
+                                     <form method="post" action="{% url 'delete_from_cart' item.id %}">
+                                         {% csrf_token %}
+                                         <button type="submit" class="btn btn-danger">{% bs_icon "trash" %}</button>
+                                     </form>
+                                 </td>
+                                </tr>
+                            {% endfor %}
+
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <h3 >Total: {{ price }}€</h3>
+
+                    </div>
+                </div>
+                <hr>
+                <div class="row d-flex">
+                    <div class="col-md-12">
+                        <a href="{% url 'process_payment' %}" class="btn btn-success btn-lg">Finish </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endif %}
+{% endblock %}
+```
+```
